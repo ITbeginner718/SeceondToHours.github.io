@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html>
+  <body>
+    <div id="root"></div>
+  </body>
+
+  <!--react 설치를 위해 두가지 키워드를 기억: react, react-dom -->
+  <!--React js는 어플리케이션이 상호작용할 수 있도록 다양한 도구 제공, 엔진과 같은 역할-->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <!--react-dom은 모든 React element들을 HTML body에 둘 수 있도록 제공 -->
+  <script src=" https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!--브라우저가 JSX를 이해할 수 있게 설정-->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <link rel="stylesheet" href="style.css">
+  <script type="text/babel">
+    function MinutesToHours() {
+      const [amount, setAmount] = React.useState();
+      //초기값 false 
+      const [inverted, setInverted]=React.useState(false);
+      const onChange = (event) => {
+        //amount 값 업데이트
+        setAmount(event.target.value);
+      };
+
+      //버튼 삭제 
+      const reset=()=>
+      {
+        setAmount(0);
+      };
+
+      const onInvert =() =>
+      {
+        //false -> true, true -> false 
+        //setInverted(!inverted); -> 좋지 못한 방법 
+        setInverted((current=>!current));
+        //inverted가 전환되면서 amount의 값을 가지고 오기 때문에 
+        //전활될 때 amount값을 0으로 초기화 
+        reset();
+      };
+
+      return (
+        <div>
+          {/*JSX에서는 className*/}
+          <div>
+            {/*label과 input을 연결 */}
+            {/*JSX에서는 for => htmlFor */}
+            <label htmlFor="minutes">Minutes</label>
+            {/*Input에 새로운 값을 입력할 때마다 해당 state{minutes}를 업데이트*/}
+            {/*const [minutes, setMinutes] = React.useState(); 에서 {minutes}와 연동*/}
+            {/*여기서 만약 onChange 이벤트를 등록하지 않느다면 value값은 항상 0으로 되어 있을꺼임*/}
+            {/*value값은 minutes 스테이트가 등록되어 있는데 디폴트값이 0인 상태로 되어 있기 때문에
+        input이 키보드를 감지한다고 해도 state가 변하지 않아 input에 있는 값도 변하지 않음*/}
+
+        {/*Minutes input이 활성화되면(inverted="false") 현재 amount state값이, 비활성화되면 (inverted="true") hours에서 변환된 값이 저장됨*/}
+            <input
+              value={inverted? amount*60:amount}             
+              id="minutes"
+              placeholder="Minutes"
+              type="number"
+              onChange={onChange}
+
+              disabled={inverted===true} /> {/* => inverted가 true면 Minutes input이 비활성화 되고 inverted가 false면 minutes input이 활성화*/}
+          </div>
+          <div>
+          {/*label과 input을 연결 */}
+          {/*JSX에서는 for => htmlFor */}
+          {/*Minutes에 값을 입력시 Hours에 값이 변경되지만 Hours에 값을 입력시 Hours에 값이 입력되지 않음*/}
+          <label htmlFor="hours">Hours</label>
+          {/*hours input이 활성화되면 현재 amount state값이, 비활성화되면 minutes에서 변환된 값이 저장됨*/}
+          <input value={inverted ?  amount :Math.round(amount/60)} id="hours" placeholder="Hours" type="number" onChange={onChange}
+          disabled={inverted===false}/> {/* => inverted가 false면 hours input이 비활성화 되고 inverted가 true면 hours input이 활성화*/}
+          </div>
+          <button onClick={reset}>Reset</button>
+          <button onClick={onInvert}>{inverted ? "Turn back":"Invert"}</button>
+          </div>
+      );
+    }
+
+    function KmToMileds()
+    {
+      const [amount, setAmount] = React.useState();
+      //초기값 false 
+      const [inverted, setInverted]=React.useState(false);
+
+      function onInvert()
+      {
+        //funtion (current) {return (!current)}; 
+        setInverted((current=>(!current)));
+        reset();
+      }
+
+      function onChange()
+      {
+        setAmount(event.target.value);
+      }
+
+      function reset()
+      {
+        setAmount(0);
+      }
+
+      return (
+        <div>
+          <div>
+            <label htmlFor="killometer">KilloMeter</label>
+            <input
+              value={inverted? amount*1.609:amount}          
+              id="killometer"
+              placeholder="KilloMeter"
+              type="number"
+              onChange={onChange}
+              disabled={inverted===true} />
+          </div>
+          <div>
+        
+          <label htmlFor="miles">Miles</label>
+          
+          <input value={inverted? amount:amount/1.609 } id="miles" placeholder="Miles" type="number" onChange={onChange} disabled={inverted===false} /> 
+          </div>
+
+          <button onClick={reset}>Reset</button>
+          <button onClick={onInvert}>{inverted ? "Turn back":"Invert"}</button>
+
+        </div>);
+    }
+
+    function App()
+    {
+      const [index, setIndex] =React.useState("xx");
+
+      const onSelect =(event)=>
+    {
+      setIndex(event.target.value);
+    }
+      
+    console.log("render w/",index);
+
+      return (
+        <div id="container">
+          <h1>Super Converter</h1>
+
+          {/*해당 옵션 값에 따라 컴포넌트 보여주기, default index값: 0*/}
+          <select value={index} onChange={onSelect}>
+            <option value="x">Select your units</option>
+            <option value="0">Minutes && Hours</option>
+            <option value="1">KM && Miles</option>
+          </select>
+
+          <hr/>
+          {index==="x" ? "Please select your units" : null}
+          {index==="0" ? <MinutesToHours/> : null}
+          {index==="1" ? <KmToMileds/> : null}
+        </div>
+      );
+    }
+
+    const root = document.getElementById("root");
+    ReactDOM.createRoot(root).render(<App/>);
+  </script>
+</html>
